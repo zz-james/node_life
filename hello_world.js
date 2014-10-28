@@ -70,12 +70,3 @@ function instructions() {
     console.log("The occupied cells change from generation to generation");
     console.log("according to the number of neighboring cells which are alive.");
 }
-
-
-
-
-
-
-
-
-
