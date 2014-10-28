@@ -1,1 +1,1 @@
-start
+this version of conways game of life is taken from chapter 9 of Robert Kruse 'Data Structures and Program Design in C++' adapted for javascript/node. I'm hoping to work up an angularJS version to run in the browser.
