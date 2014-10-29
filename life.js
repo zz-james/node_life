@@ -8,11 +8,21 @@ module.exports.Constructor = function () {
   this.living = []; // list of living cells.
   this.hashLiving = []; // list of same cells but indexed by hash(row,col)
 
-  var Cell = function(x,y) {
-    this.row = x;
-    this.col = y;
+  /**
+   * constructor function for cell type
+   * @param {[int]} col [column]
+   * @param {[int]} row [row]
+   */
+  var Cell = function(row,col) {
+    this.col = col;
+    this.row = row;
   };
 
+  /**
+   * these 2 functions are for inseting and retrieving cells using row,col
+   * as key. this maps to the same set of cells as living but living
+   * just has regular sequence index for fast traversal in the update function
+   */
   this.hashLiving.insert = function(cell) {
     var index = MAX_COORD * cell.row + cell.col;
     this[index] = cell;
@@ -25,13 +35,14 @@ module.exports.Constructor = function () {
 
   /**
    * pre : the cell with coordinates row and col does not belong to the life configuration
-   * post: the cell has been added to the configuration. 
-   * uses: the array living
+   * post: the cell has been added to the configuration both index useing sequence and (row,col) key
+   * uses: the array living and the hashArray
    * 
    * @param  {[int]} row
    * @param  {[int]} col
    */
   this.insert = function(row,col) {
+    if(row < 0 || col < 0) { return; } // don't store cells with nagative index - you can comment this out to see effect
     var newCell = new Cell(row,col);
     this.living.push(newCell);
     this.hashLiving.insert(newCell);  // this keeps the 2 lists in synch. one indexed for traversal, one indexed by hash(row,col)
@@ -55,28 +66,15 @@ module.exports.Constructor = function () {
 
   };
 
-
-//   int Life::neighbour_count(int row, int col) {
-    
-
-//     /* Pre: the life object contains aconfiguration and the coordinates row and col
-//      define a cell living inside its hedge
-//       Post: The number of living neighbours of the spcified cell is returned */
-//     int i,j;
-//     int count = 0;
-//     for (i = row-1; i <= row + 1; i++) {
-//         for (j = col-1; j <= col + 1; j++) {
-//             count += grid[i][j]; // increase the count if neighbour is alive
-//         }
-//     }
-//     count -= grid[row][col]; // do not count yourself
-//     return count;
-// }
-
+  /**
+   * allows a config to be entered
+   * @return {[void]} [
+   */
   this.initialise = function() {
-    this.insert(0,0);this.insert(0,1);this.insert(0,2);
-    this.insert(1,0);this.insert(1,1);this.insert(1,2);
-    this.insert(2,0);this.insert(2,1);this.insert(2,2);
+    // row,col !
+    this.insert(23,23);this.insert(23,24);this.insert(23,25);
+    this.insert(24,23);this.insert(24,24);this.insert(24,25);
+    this.insert(25,23);this.insert(25,23);this.insert(25,25);
   };
 
   /**
@@ -85,12 +83,11 @@ module.exports.Constructor = function () {
    * @return {[void]}
    */
   this.print = function() {
-    
     var row, col;
     var output = '';
     console.log("The current Life configuration is:");
-    for(row = 0; row < 10; row++) {
-      for(col = 0; col < 10; col++) {
+    for(row = 0; row < 50; row++) {
+      for(col = 0; col < 50; col++) {
 
         if(this.hashLiving.retrieve(row,col)) {
           output += this.neighbourCount(row,col);
@@ -103,7 +100,6 @@ module.exports.Constructor = function () {
     } //end row loop
     console.log(output);
     console.log('\n');
-
   };
 
   /**
@@ -120,7 +116,7 @@ module.exports.Constructor = function () {
 
     for(var i = 0; i < this.living.length; i++) {
 
-      oldCell = this.living[i]; // obtain living cell here we're just usiing an index
+      oldCell = this.living[i]; // obtain living cell here we're just using an index
 
       for(row_offset = -1; row_offset < 2; row_offset++) {
         for(col_offset = -1; col_offset < 2; col_offset++) {
@@ -147,6 +143,7 @@ module.exports.Constructor = function () {
                 break;
 
                 default:
+                  // noop
                 break;
               }
           }
